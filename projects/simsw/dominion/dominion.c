@@ -827,7 +827,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
     case minion:
       return playMinion(state, handPos, currentPlayer, choice1, choice2);
-      
+
     case steward:
       if (choice1 == 1)
 	{
@@ -1187,8 +1187,8 @@ int playAdventurer(struct gameState *state, int currentPlayer, int drawntreasure
       shuffle(currentPlayer, state);
     }
     drawCard(currentPlayer, state);
-    cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]-1];//top card of hand is most recently drawn card.
-    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
+    cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]]; //BUG removed -1 so card drawn isn't set to most recent card
+    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold) //top card of hand is most recently drawn card.
     drawntreasure++;
     else{
       temphand[z]=cardDrawn;
@@ -1212,7 +1212,7 @@ int playSmithy (struct gameState *state, int handPos, int currentPlayer) {
   }
 
   //discard card from hand
-  discardCard(handPos, currentPlayer, state, 0);
+  discardCard(handPos, currentPlayer, state, 1); //BUG trash card instead of adding it to played pile
   return 0;
 }
 
@@ -1225,7 +1225,7 @@ int playMinion(struct gameState *state, int handPos, int currentPlayer, int choi
   //discard card from hand
   discardCard(handPos, currentPlayer, state, 0);
 
-  if (choice1)		//+2 coins
+  if (choice2) //BUG changed choice1 to choice2		//+2 coins
   {
     state->coins = state->coins + 2;
   }
@@ -1312,7 +1312,7 @@ int playFeast (struct gameState *state, int choice1, int currentPlayer, int temp
         printf("Cards Left: %d\n", supplyCount(choice1, state));
       }
     }
-    else if (state->coins < getCost(choice1)){
+    else if (state->coins > getCost(choice1)){ //BUG number of coins is greater than cost, then print too expensive which is backwards.
       printf("That card is too expensive!\n");
 
       if (DEBUG){
@@ -1350,3 +1350,4 @@ int playFeast (struct gameState *state, int choice1, int currentPlayer, int temp
 
 
 //end of dominion.c
+  
