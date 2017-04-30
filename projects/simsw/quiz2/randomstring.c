@@ -1,3 +1,4 @@
+/*
 Random Testing Quiz 2
 Author: Will Sims
 
@@ -8,3 +9,4 @@ I implemented the inputChar() function by using the built in rand() function and
 I implemented my inputString() function by filling a string with numbers from 97 to 122 which are all the lowercase ASCII values. I had initially had this the same as inputChar() which was 32 to 127 which would test more cases, but it was taking a very long time to eventually return "reset". Since I don't know exactly how the program is going to be used, I think using only lowcase letters is fine for this context and I could make changes if more requirements were introduced.
 
 After enough interations (took 1312477 the first time, 18339963 the second time), inputString should randomly generate the string "reset" which will cause the program to end and the error to be displayed. The state is set to 9 so quickly, that it has very little effect on the number of iterations.
+*/
