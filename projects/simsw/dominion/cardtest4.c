@@ -43,7 +43,7 @@ int main() {
   // initialize a game state and player cards
   initializeGame(numPlayers, k, seed, &G);
   memcpy(&testG, &G, sizeof(struct gameState));
-  cardEffect(village, choice1, choice2, choice3, &testG, handpos, &bonus);
+  cardEffect(great_hall, choice1, choice2, choice3, &testG, handpos, &bonus);
 
   printf("----------------- Testing Card: %s ----------------\n", TESTCARD);
 
