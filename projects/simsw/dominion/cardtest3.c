@@ -28,7 +28,7 @@ int main() {
   int discarded = 1;
   int xtraCoins = 0;
   int shuffledCards = 0;
-  int testResult = 0;
+  int testResult = 1;
 
   int i, j, m;
   int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
