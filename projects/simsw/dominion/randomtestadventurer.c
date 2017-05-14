@@ -1,5 +1,5 @@
 /*
- * randomtestcard1.c
+ * randomtestadventurer.c
  * Author: Will Sims
  * Random testing of the adventurer card
  */
@@ -7,8 +7,8 @@
 /*
  * Include the following lines in your makefile:
  *
- * randomtestcard1: randomtestcard1.c dominion.o rngs.o
- *      gcc -o randomtestcard1 -g  randomtestcard1.c dominion.o rngs.o $(CFLAGS)
+ * randomtestadventurer: randomtestadventurer.c dominion.o rngs.o
+ *      gcc -o randomtestadventurer -g  randomtestadventurer.c dominion.o rngs.o $(CFLAGS)
  */
 
 #include "dominion.h"
@@ -30,17 +30,16 @@ int main(){
     SelectStream(2);
     PutSeed(3);
     int k[10] = {adventurer, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy, council_room};
+    p = 0;
 
     struct gameState G;
 
-    p = 0;
     int numPlayers = rand() % 4 + 1;
     initializeGame(numPlayers, k, seed, &G);
 
     printf("----------------- Random Testing Card: %s ----------------\n", TESTCARD);
 
     for (n = 0; n < 2000; n++){
-
       initializeGame(numPlayers, k, seed, &G);
 
       G.deckCount[p] = floor(Random() * MAX_DECK);
@@ -50,7 +49,7 @@ int main(){
       G.whoseTurn = p;
 
       //create randomized hand
-      for (i = 0; i < 5; i++) {
+      for (i = 0; i < G.handCount[p]; i++) {
             int randomcard = rand() % 10;
             G.hand[p][i] = k[randomcard];
       }
