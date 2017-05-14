@@ -667,7 +667,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
   switch( card )
     {
     case adventurer:
-      return playAdventurer(state, currentPlayer, drawntreasure, cardDrawn, temphand, z);
+      return playAdventurer(state);
 
     case council_room:
       //+4 Cards
@@ -761,18 +761,10 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case smithy:
-      return playSmithy (state, handPos, currentPlayer);
+      return playSmithy(state, handPos, currentPlayer);
 
     case village:
-      //+1 Card
-      drawCard(currentPlayer, state);
-
-      //+2 Actions
-      state->numActions = state->numActions + 2;
-
-      //discard played card from hand
-      discardCard(handPos, currentPlayer, state, 0);
-      return 0;
+      return playVillage(state, handPos, currentPlayer);
 
     case baron:
       state->numBuys++;//Increase buys by 1!
@@ -826,15 +818,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case great_hall:
-      //+1 Card
-      drawCard(currentPlayer, state);
-
-      //+1 Actions
-      state->numActions++;
-
-      //discard card from hand
-      discardCard(handPos, currentPlayer, state, 0);
-      return 0;
+      return playGreatHall(state, handPos, currentPlayer);
 
     case minion:
       return playMinion(state, handPos, currentPlayer, choice1, choice2);
@@ -1192,7 +1176,19 @@ int updateCoins(int player, struct gameState *state, int bonus)
 
 //Assignment 2 refactored cards
 //refactored adventurer card
-int playAdventurer(struct gameState *state, int currentPlayer, int drawntreasure, int cardDrawn, int temphand[], int z) {
+int playAdventurer(struct gameState *state) {
+  int i;
+  int j;
+  int k;
+  int x;
+  int index;
+  int currentPlayer = whoseTurn(state);
+  int nextPlayer = currentPlayer + 1;
+  int tributeRevealedCards[2] = {-1, -1};
+  int temphand[MAX_HAND];// moved above the if statement
+  int drawntreasure=0;
+  int cardDrawn;
+  int z = 0;// this is the counter for the temp hand
   while(drawntreasure<2){
     if (state->deckCount[currentPlayer] <1){//if the deck is empty we need to shuffle discard and add to deck
       shuffle(currentPlayer, state);
@@ -1357,6 +1353,29 @@ int playFeast (struct gameState *state, int choice1, int currentPlayer, int temp
 
 }
 
+int playVillage(struct gameState *state, int handPos, int currentPlayer){
+  //+1 Card
+  drawCard(currentPlayer, state);
+
+  //+2 Actions
+  state->numActions = state->numActions + 2;
+
+  //discard played card from hand
+  discardCard(handPos, currentPlayer, state, 0);
+  return 0;
+}
+
+int playGreatHall(struct gameState *state, int handPos, int currentPlayer){
+    //+1 Card
+  drawCard(currentPlayer, state);
+
+  //+1 Actions
+  state->numActions++;
+
+  //discard card from hand
+  discardCard(handPos, currentPlayer, state, 0);
+}
+
 int assertTrue (testVar, testResult) {
   if (! testVar) {
     testResult = 0;
@@ -1365,8 +1384,13 @@ int assertTrue (testVar, testResult) {
   return testResult;
 }
 
+int assertTrueName(int testVar, int testResult, char *testName) {
+  if (! testVar) {
+    testResult = 0;
+    	printf("%s - FAILED\n", testName);
+  }
+  return testResult;
+}
 
 
-
-//end of dominion.c
-  
+//end of dominion.c                                                                                                                                                                                         
