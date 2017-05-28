@@ -1,120 +1,164 @@
-/* unittest1.c - Testing isGameOver function */
+/*
+ * unittest1.c
+ *
+ * Requirements of initializeGame():
+ * Return -1 for invalid game states in intilization
+ * No repeat kingdom cards are allowed
+ * Games require at least 2 people and at most 4 players
+ * The number of Curses in the Supply is 10 for each player beyond the first -- 10 for two players, 20 for
+ * three players, 30 for four players, and so on.
+ * Victory card piles should be 8 for a 2 player game and 12 for a 3 or 4 player game
+ * Copper supply should start at 46 for 2 players, 39 for 3 players, and 32 for 4 player games.
+ */
+
+/*
+ * Include the following lines in your makefile:
+ *
+ * unittest1: unittest1.c dominion.o rngs.o
+ *      gcc -o cardtest1 -g  unittest1.c dominion.o rngs.o $(CFLAGS)
+ */
+
+int assertTrue (testVar, testResult) {
+  if (! testVar) {
+    testResult = 0;
+    	printf("Test failure.\n");
+  }
+  return testResult;
+}
+
+int assertTrueName(int testVar, int testResult, char *testName) {
+  if (! testVar) {
+    testResult = 0;
+    	printf("%s - FAILED\n", testName);
+  }
+  return testResult;
+}
 
 #include "dominion.h"
 #include "dominion_helpers.h"
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include "rngs.h"
 #include <stdlib.h>
 
+#define TESTFUNCTION "initializeGame"
 
-int main(){
-	
-	int seed = 1000, numPlayers = 2, result, failures = 0, numSupply, count, index, i, h, j, k;
-	struct gameState G, test;
-	int kingdomCards[10] = {adventurer, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy, council_room};
-	
-	
-	printf("############### Testing Function: isGameOver ###############\n");
-	
-	//initialize game state and copy to test case
-	initializeGame(numPlayers, kingdomCards, seed, &G);
-	memcpy(&test, &G, sizeof(struct gameState));
-	
-	//test initial case
-	result = isGameOver(&test);
-	if(result == 0)
-		printf("PASSED initial case\n");
-	else
-		printf("FAILED initial case\n");
-	
-	
-	//test case when province supplyCount equals 0
-	test.supplyCount[province] = 0;
-	result = isGameOver(&test);
-	if(result == 1)
-		printf("PASSED province supplyCount equals 0\n");
-	else
-		printf("FAILED province supplyCount equals 0\n");
-	
-	
-	//test cases when province supplyCount > 0
-	for(i = 1; i < 9; i++){
-		test.supplyCount[province] = i;
-		result = isGameOver(&test);
-		if(result == 1){
-			failures++;
-			index = i;
-		}
-	}	
-	if(failures == 0)
-		printf("PASSED province supplyCount > 0\n");
-	else
-		printf("FAILED province supplyCount > 0 when supply is %d\n", numSupply);
-	
-	
-	//test when any other supply piles equals 0
-	failures = 0;
-	for(h = 0; h < 25; h++){
-		memcpy(&test, &G, sizeof(struct gameState));
-		test.supplyCount[province] = 1;
-		if(test.supplyCount[h] != 1){
-			test.supplyCount[h] = 0;
-			result = isGameOver(&test);
-			if(result == 1){
-				failures++;
-			}
-		}
-	}
-	if(failures == 0)
-		printf("PASSED other supply piles equal 0\n");
-	else
-		printf("FAILED other supply piles equal 0\n");
-	
-	
-	
-	//test when 3 supply piles equal 0
-	memcpy(&test, &G, sizeof(struct gameState));
-	test.supplyCount[province] = 1;
-	count = 0;
-	for(j = 0; j < 25; j++){
-		if(test.supplyCount[j] != 1){
-			test.supplyCount[j] = 0;
-			count++;
-			if(count > 2){
-				break;
-			}
-		}
-	}
-	result = isGameOver(&test);
-	if(result == 1)
-		printf("PASSED three supply piles equal 0\n");
-	else
-		printf("FAILED three supply piles equal 0\n");
-	
-	
-	//test when 2 supply piles equal 0
-	memcpy(&test, &G, sizeof(struct gameState));
-	test.supplyCount[province] = 1;
-	count = 0;
-	for(k = 0; k < 25; k++){
-		if(test.supplyCount[j] != 1){
-			test.supplyCount[k] = 0;
-			count++;
-			if(count > 1){
-				break;
-			}
-		}
-	}
-	result = isGameOver(&test);
-	if(result == 0)
-		printf("PASSED two supply piles equal 0\n");
-	else
-		printf("FAILED two supply piles equal 0\n");
-	
-		
-	
-	printf("\n***isGameOver testing finished***\n");
-	
+int main() {
+  int testResult = 1;
+
+  int i, j, m;
+  int state;
+  struct gameState G;
+  int seed = 1000;
+  int numPlayers = 0;
+  int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
+    sea_hag, tribute, smithy, council_room};
+
+  printf("----------------- Testing Function: %s ----------------\n", TESTFUNCTION);
+
+  // ----------- TEST 1: Check if kingdom cards are set correctly at start of game --------------
+  printf("\nTEST 1: Check if kingdom cards are set correctly at start of game\n");
+  k[1] = adventurer;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("Check if game state returns -1 when duplicate kingdom cards are passed\n");
+  testResult = assertTrue(state == -1, testResult);
+
+
+  k[1] = embargo;
+  printf("\nTEST 2: Check for valid number of players in a game\n");
+  numPlayers = -1;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("Check if game state returns -1 when initialized with -1 players.\n");
+  testResult = assertTrue(state == -1, testResult);
+
+  numPlayers = 5;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("Check if game state returns -1 when initialized with 5 players.\n");
+  testResult = assertTrue(state == -1, testResult);
+
+  numPlayers = 2;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("Check if game is active when initialized with 2 players.\n");
+  testResult = assertTrue(state == 0, testResult);
+  printf("Check that number of players is correctly set.\n");
+  testResult = assertTrue(G.numPlayers == numPlayers, testResult);
+  printf("number of players = %d, expected = %d\n", G.numPlayers, numPlayers);
+
+  printf("\nTEST 3: Check for valid curse supplies depending on number of players\n");
+  numPlayers = 2;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("2 players\n");
+  printf("curse supply = %d, expected = %d\n", G.supplyCount[curse], 10);
+  testResult = assertTrue(G.supplyCount[curse] == 10, testResult);
+
+  numPlayers = 3;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("3 players\n");
+  printf("curse supply = %d, expected = %d\n", G.supplyCount[curse], 20);
+  testResult = assertTrue(G.supplyCount[curse] == 20, testResult);
+
+  numPlayers = 4;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("4 players\n");
+  printf("curse supply = %d, expected = %d\n", G.supplyCount[curse], 30);
+  testResult = assertTrue(G.supplyCount[curse] == 30, testResult);
+
+  printf("\nTEST 4: Check for valid victory card supplies depending on number of players\n");
+  numPlayers = 2;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("2 players\n");
+  printf("estate supply = %d, expected = %d\n", G.supplyCount[estate], 8);
+  testResult = assertTrue(G.supplyCount[estate] == 8, testResult);
+  printf("duchy supply = %d, expected = %d\n", G.supplyCount[duchy], 8);
+  testResult = assertTrue(G.supplyCount[duchy] == 8, testResult);
+  printf("province supply = %d, expected = %d\n", G.supplyCount[province], 8);
+  testResult = assertTrue(G.supplyCount[province] == 8, testResult);
+
+  numPlayers = 3;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("3 players\n");
+  printf("estate supply = %d, expected = %d\n", G.supplyCount[estate], 12);
+  testResult = assertTrue(G.supplyCount[estate] == 12, testResult);
+  printf("duchy supply = %d, expected = %d\n", G.supplyCount[duchy], 12);
+  testResult = assertTrue(G.supplyCount[duchy] == 12, testResult);
+  printf("province supply = %d, expected = %d\n", G.supplyCount[province], 12);
+  testResult = assertTrue(G.supplyCount[province] == 12, testResult);
+
+  numPlayers = 4;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("4 players\n");
+  printf("estate supply = %d, expected = %d\n", G.supplyCount[estate], 12);
+  testResult = assertTrue(G.supplyCount[estate] == 12, testResult);
+  printf("duchy supply = %d, expected = %d\n", G.supplyCount[duchy], 12);
+  testResult = assertTrue(G.supplyCount[duchy] == 12, testResult);
+  printf("province supply = %d, expected = %d\n", G.supplyCount[province], 12);
+  testResult = assertTrue(G.supplyCount[province] == 12, testResult);
+
+  printf("\nTEST 5: Check for valid copper supplies depending on number of players\n");
+  numPlayers = 2;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("2 players\n");
+  printf("copper supply = %d, expected = %d\n", G.supplyCount[copper], 46);
+  testResult = assertTrue(G.supplyCount[copper] == 46, testResult);
+
+  numPlayers = 3;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("3 players\n");
+  printf("copper supply = %d, expected = %d\n", G.supplyCount[copper], 39);
+  testResult = assertTrue(G.supplyCount[copper] == 39, testResult);
+
+  numPlayers = 4;
+  state = initializeGame(numPlayers, k, seed, &G);
+  printf("4 players\n");
+  printf("copper supply = %d, expected = %d\n", G.supplyCount[copper], 32);
+  testResult = assertTrue(G.supplyCount[copper] == 32, testResult);
+
+
+  if(testResult)
+      printf("\nTEST SUCCESSFULLY COMPLETED\n\n");
+  else
+      printf("TEST FAILED\n\n");
+
 	return 0;
 }
