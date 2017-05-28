@@ -1,0 +1,32 @@
+
+Breakpoint 1 at 0x40629b: file dominion.c, line 1185.
+Starting program: /nfs/stak/students/s/simsw/cs362/CS362-004-SP17/projects/simsw/dominion/cardtest2 
+
+Breakpoint 1, playAdventurer (state=0x7fffffff0c40) at dominion.c:1185
+1185	  int currentPlayer = whoseTurn(state);
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-157.el7_3.2.x86_64
+$1 = 5
+Hardware watchpoint 2: state->handCount[0]
+Continuing.
+Hardware watchpoint 2: state->handCount[0]
+
+Old value = 5
+New value = 6
+0x000000000040398c in drawCard (player=0, state=0x7fffffff0c40) at dominion.c:577
+577	    state->handCount[player]++;//Increment hand count
+Continuing.
+Hardware watchpoint 2: state->handCount[0]
+
+Old value = 6
+New value = 7
+0x000000000040398c in drawCard (player=0, state=0x7fffffff0c40) at dominion.c:577
+577	    state->handCount[player]++;//Increment hand count
+Continuing.
+
+Watchpoint 2 deleted because the program has left the block in
+which its expression is valid.
+0x0000000000403de9 in cardEffect (card=7, choice1=0, choice2=0, choice3=0, state=0x7fffffff0c40, handPos=0, bonus=0x7fffffffd9c8)
+    at dominion.c:670
+670	      return playAdventurer(state);
+Continuing.
+[Inferior 1 (process 24178) exited normally]
